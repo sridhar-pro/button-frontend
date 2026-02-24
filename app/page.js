@@ -242,7 +242,7 @@ function SlotCard({
           {!showImage && (
             <video
               ref={videoRef}
-              src="/unlock.mp4"
+              src="/unlock3.mp4"
               muted
               playsInline
               preload="auto"
