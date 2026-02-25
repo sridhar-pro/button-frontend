@@ -46,35 +46,6 @@ function FloralAccent({ style }) {
   );
 }
 
-function RoseIcon({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 3C12 3 8 6 8 10C8 12.2 9.8 14 12 14C14.2 14 16 12.2 16 10C16 6 12 3 12 3Z"
-        fill="#A00300"
-        opacity="0.9"
-      />
-      <path
-        d="M12 14C12 14 9 15 9 18C9 19.7 10.3 21 12 21C13.7 21 15 19.7 15 18C15 15 12 14 12 14Z"
-        fill="#A00300"
-        opacity="0.7"
-      />
-      <path
-        d="M12 14L12 22"
-        stroke="#4a7c4e"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10 18L8 20"
-        stroke="#4a7c4e"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 function SkeletonRow({ index }) {
   return (
     <motion.div
@@ -435,7 +406,14 @@ export default function AdminPanel() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
 
-  // Fetch real state on mount
+  const [targetCount, setTargetCount] = useState(9);
+
+  const [inputValue, setInputValue] = useState(9);
+  const [inputError, setInputError] = useState("");
+
+  const [updateMessage, setUpdateMessage] = useState("");
+  const [updateStatus, setUpdateStatus] = useState(""); // "success" | "error"
+
   useEffect(() => {
     const fetchInitialState = async () => {
       try {
@@ -454,9 +432,48 @@ export default function AdminPanel() {
         setInitialLoading(false);
       }
     };
+
     fetchInitialState();
   }, []);
 
+  useEffect(() => {
+    const savedTarget = localStorage.getItem("launchTargetCount");
+    if (savedTarget) {
+      const numeric = Number(savedTarget);
+      setTargetCount(numeric);
+      setInputValue(numeric);
+    }
+  }, []);
+
+  const handleApplyTarget = () => {
+    if (!inputValue) {
+      setInputError("Please enter a value between 1 and 9");
+      setUpdateStatus("error");
+      setUpdateMessage("Update failed");
+      return;
+    }
+
+    const numeric = Number(inputValue);
+
+    if (numeric < 1 || numeric > 9) {
+      setInputError("Enter a value between 1 and 9");
+      setUpdateStatus("error");
+      setUpdateMessage("Update failed");
+      return;
+    }
+
+    setInputError("");
+    setTargetCount(numeric);
+    localStorage.setItem("launchTargetCount", numeric);
+
+    setUpdateStatus("success");
+    setUpdateMessage("Updated successfully");
+
+    setTimeout(() => {
+      setUpdateMessage("");
+      setUpdateStatus("");
+    }, 2000);
+  };
   const updateButton = async (buttonId, value) => {
     try {
       setLoading((prev) => ({ ...prev, [buttonId]: true }));
@@ -671,6 +688,126 @@ export default function AdminPanel() {
                 transition={{ repeat: Infinity, duration: 1.8 }}
               />
             </div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              style={{
+                marginTop: "18px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "10px",
+                    color: "rgba(255,255,255,0.4)",
+                    letterSpacing: "0.15em",
+                  }}
+                >
+                  FINAL TRIGGER AT
+                </span>
+
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={inputValue}
+                  onChange={(e) => {
+                    const val = e.target.value;
+
+                    // Allow only digits 1–9
+                    if (/^[1-9]?$/.test(val)) {
+                      setInputValue(val);
+                      setInputError("");
+                    }
+                  }}
+                  style={{
+                    width: "60px",
+                    padding: "6px 8px",
+                    borderRadius: "6px",
+                    border: inputError
+                      ? "1px solid #ff4444"
+                      : "1px solid rgba(160,3,0,0.4)",
+                    background: "rgba(0,0,0,0.4)",
+                    color: "#fff",
+                    textAlign: "center",
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "12px",
+                  }}
+                />
+                <motion.button
+                  onClick={handleApplyTarget}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "6px",
+                    border: "none",
+                    background: "linear-gradient(135deg, #A00300, #ff4444)",
+                    color: "white",
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "10px",
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                  }}
+                >
+                  Update
+                </motion.button>
+
+                <span
+                  style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "10px",
+                    color: "rgba(255,255,255,0.3)",
+                    letterSpacing: "0.15em",
+                  }}
+                >
+                  LIVE SELLERS
+                </span>
+              </div>
+
+              {inputError && (
+                <span
+                  style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "9px",
+                    color: "#ff8080",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  {inputError}
+                </span>
+              )}
+
+              {updateMessage && (
+                <motion.span
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "9px",
+                    letterSpacing: "0.1em",
+                    color: updateStatus === "success" ? "#6ee7b7" : "#ff8080",
+                  }}
+                >
+                  {updateMessage}
+                </motion.span>
+              )}
+            </motion.div>
 
             {/* Error state */}
             <AnimatePresence>

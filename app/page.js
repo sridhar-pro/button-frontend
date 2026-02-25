@@ -391,6 +391,8 @@ export default function Home() {
   const videoRefs = useRef({});
   const previousStates = useRef({});
 
+  const [targetCount, setTargetCount] = useState(9);
+
   const fetchButtons = async () => {
     try {
       const res = await fetch(API_URL);
@@ -438,15 +440,24 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const savedTarget = localStorage.getItem("launchTargetCount");
+    if (savedTarget) {
+      setTargetCount(Number(savedTarget));
+    }
+  }, []);
+
   const totalUnlocked = Object.values(buttonStates).filter(
     (v) => v === 1,
   ).length;
 
   useEffect(() => {
-    if (totalUnlocked === 9) {
+    if (totalUnlocked >= targetCount) {
       setAllUnlocked(true);
+    } else {
+      setAllUnlocked(false);
     }
-  }, [totalUnlocked]);
+  }, [totalUnlocked, targetCount]);
 
   const handleUnlockVideoEnd = (key) => {
     if (allUnlocked) {
@@ -602,61 +613,6 @@ export default function Home() {
               >
                 Sale Week
               </div>
-
-              {/* Progress bar row */}
-              {/* <div
-            style={{
-              marginTop: "18px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "14px",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "12px",
-                color: "rgba(255,180,180,0.5)",
-                letterSpacing: "0.1em",
-              }}
-            >
-              {totalUnlocked} of 9 Sellers Live
-            </span>
-
-            <div
-              style={{
-                width: "80px",
-                height: "3px",
-                background: "rgba(160,3,0,0.2)",
-                borderRadius: "2px",
-                overflow: "hidden",
-              }}
-            >
-              <motion.div
-                style={{
-                  height: "100%",
-                  background: "linear-gradient(to right, #A00300, #ff6b6b)",
-                  borderRadius: "2px",
-                }}
-                animate={{ width: `${(totalUnlocked / 9) * 100}%` }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              />
-            </div>
-
-            <motion.span
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "11px",
-                color: "#A00300",
-                letterSpacing: "0.15em",
-              }}
-              animate={{ opacity: [1, 0.5, 1] }}
-              transition={{ repeat: Infinity, duration: 1.8 }}
-            >
-              ● Live
-            </motion.span>
-          </div> */}
             </motion.div>
 
             {/* Grid */}
@@ -671,8 +627,9 @@ export default function Home() {
                 zIndex: 1,
               }}
             >
-              {Array.from({ length: 9 }, (_, i) => {
+              {Array.from({ length: targetCount }, (_, i) => {
                 const key = String(i + 1);
+
                 return (
                   <SlotCard
                     key={key}
@@ -711,11 +668,10 @@ export default function Home() {
           </motion.main>
         )}
       </AnimatePresence>
-
       <AnimatePresence>
         {showFinalVideo && (
           <motion.div
-            key="final-video"
+            key="final-wrapper"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -723,19 +679,50 @@ export default function Home() {
             style={{
               position: "fixed",
               inset: 0,
-              background: "black",
               zIndex: 9999,
+              overflow: "hidden",
+              background: "black",
             }}
           >
+            {/* 🔴 Cinematic Crimson Bloom */}
+            <motion.div
+              initial={{ scale: 0.6, opacity: 0.8 }}
+              animate={{ scale: 2.2, opacity: 0 }}
+              transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "radial-gradient(circle at center, rgba(160,3,0,0.8) 0%, rgba(160,3,0,0.5) 25%, rgba(0,0,0,1) 70%)",
+                zIndex: 2,
+              }}
+            />
+
+            {/* ✨ Subtle Silk Flash */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.4, 0] }}
+              transition={{ duration: 1.2 }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)",
+                zIndex: 3,
+              }}
+            />
+
+            {/* 🎥 Final Video Reveal */}
             <motion.video
               src="/end.mp4"
               autoPlay
               muted
               playsInline
               className="w-full h-full object-cover"
-              initial={{ scale: 1.08 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 6, ease: "easeOut" }}
+              initial={{ scale: 1.2, filter: "blur(8px) brightness(0.6)" }}
+              animate={{ scale: 1, filter: "blur(0px) brightness(1)" }}
+              transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
+              style={{ position: "relative", zIndex: 1 }}
             />
           </motion.div>
         )}
