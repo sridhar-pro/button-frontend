@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_UPDATE = "https://button-api.onrender.com/api/buttons/update";
-const API_URL = "https://button-api.onrender.com/api/buttons";
+const API_UPDATE = "https://launch.betalearnings.com/api/buttons/update";
+const API_URL = "https://launch.betalearnings.com/api/buttons";
 
 const persons = [
   { id: 1, name: "Person 1" },

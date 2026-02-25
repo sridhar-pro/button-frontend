@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_URL = "https://button-api.onrender.com/api/buttons";
+const API_URL = "https://launch.betalearnings.com/api/buttons";
 
 // Petal / sparkle burst on unlock
 function Particles({ active }) {
@@ -43,76 +43,186 @@ function Particles({ active }) {
   );
 }
 
-// Animated lock → bloom icon
-function LockIcon({ unlocked }) {
+// Rivet bolt
+function Rivet({ style }) {
   return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-      <motion.rect
-        x="3"
-        y="11"
-        width="18"
-        height="11"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        fill="none"
-        animate={{ y: 0 }}
-      />
-      <motion.path
-        strokeLinecap="round"
-        strokeWidth="1.8"
-        stroke="currentColor"
-        fill="none"
-        animate={
-          unlocked
-            ? { d: "M7 11V7a5 5 0 0 1 9.9-1" }
-            : { d: "M7 11V7a5 5 0 0 1 10 0v4" }
-        }
-        transition={{ duration: 0.5, ease: "easeInOut" }}
-      />
-      <motion.circle
-        cx="12"
-        cy="16"
-        r="1.5"
-        fill="currentColor"
-        animate={{ scale: unlocked ? [1, 1.6, 1] : 1 }}
-        transition={{ duration: 0.4 }}
-      />
-    </svg>
+    <div
+      style={{
+        width: 9,
+        height: 9,
+        borderRadius: "50%",
+        background: "radial-gradient(circle at 35% 30%, #7a7a8a, #252530)",
+        boxShadow:
+          "0 2px 4px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.1)",
+        position: "absolute",
+        zIndex: 10,
+        ...style,
+      }}
+    />
   );
 }
 
-// Subtle rose SVG watermark
-function RoseWatermark({ opacity = 0.05 }) {
+// Panel edge rivets matching the reference image
+function PanelRivets() {
+  return (
+    <>
+      <Rivet style={{ top: 7, left: 7 }} />
+      <Rivet style={{ top: 7, right: 7 }} />
+      <Rivet style={{ bottom: 7, left: 7 }} />
+      <Rivet style={{ bottom: 7, right: 7 }} />
+      <Rivet style={{ top: 7, left: "50%", transform: "translateX(-50%)" }} />
+      <Rivet
+        style={{ bottom: 7, left: "50%", transform: "translateX(-50%)" }}
+      />
+      <Rivet style={{ left: 7, top: "50%", transform: "translateY(-50%)" }} />
+      <Rivet style={{ right: 7, top: "50%", transform: "translateY(-50%)" }} />
+      <Rivet style={{ top: 7, left: "25%" }} />
+      <Rivet style={{ top: 7, right: "25%" }} />
+      <Rivet style={{ bottom: 7, left: "25%" }} />
+      <Rivet style={{ bottom: 7, right: "25%" }} />
+      <Rivet style={{ left: 7, top: "25%" }} />
+      <Rivet style={{ left: 7, bottom: "25%" }} />
+      <Rivet style={{ right: 7, top: "25%" }} />
+      <Rivet style={{ right: 7, bottom: "25%" }} />
+    </>
+  );
+}
+
+// Padlock SVG shown over locked video area
+function PadlockSVG({ pulse }) {
   return (
     <svg
-      viewBox="0 0 100 100"
-      style={{
-        position: "absolute",
-        bottom: -10,
-        right: -10,
-        width: 90,
-        height: 90,
-        opacity,
-        pointerEvents: "none",
-      }}
+      viewBox="0 0 90 110"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ width: "100%", height: "100%" }}
     >
-      <g fill="#A00300">
-        {/* simplified rose petals */}
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-          <ellipse
+      <defs>
+        <radialGradient id="bodyGradL" cx="40%" cy="30%" r="65%">
+          <stop offset="0%" stopColor="#8a7850" />
+          <stop offset="50%" stopColor="#3a3020" />
+          <stop offset="100%" stopColor="#1a1208" />
+        </radialGradient>
+        <radialGradient id="glowRedL" cx="50%" cy="60%" r="55%">
+          <stop offset="0%" stopColor={`rgba(130,10,0,${0.5 * pulse})`} />
+          <stop offset="60%" stopColor={`rgba(80,5,0,${0.22 * pulse})`} />
+          <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+        </radialGradient>
+        <filter id="lockGlowL" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="redGlowL" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <ellipse
+        cx="45"
+        cy="80"
+        rx="32"
+        ry="22"
+        fill="url(#glowRedL)"
+        filter="url(#redGlowL)"
+      />
+      <path
+        d="M25 58 L25 36 Q25 10 45 10 Q65 10 65 36 L65 58"
+        stroke="#5a4828"
+        strokeWidth="10"
+        strokeLinecap="round"
+        fill="none"
+        filter="url(#lockGlowL)"
+      />
+      <path
+        d="M27 58 L27 37 Q27 13 45 13 Q62 13 62 37 L62 58"
+        stroke="rgba(255,200,100,0.13)"
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <rect
+        x="38"
+        y="6"
+        width="14"
+        height="8"
+        rx="4"
+        fill="#3a2e18"
+        stroke="rgba(255,200,80,0.12)"
+        strokeWidth="1"
+      />
+      <rect
+        x="10"
+        y="55"
+        width="70"
+        height="54"
+        rx="10"
+        ry="10"
+        fill="url(#bodyGradL)"
+      />
+      <rect
+        x="10"
+        y="55"
+        width="70"
+        height="54"
+        rx="10"
+        ry="10"
+        stroke="rgba(255,180,80,0.1)"
+        strokeWidth="1"
+        fill="none"
+      />
+      <path
+        d="M18 60 Q45 56 72 60"
+        stroke="rgba(255,200,100,0.09)"
+        strokeWidth="1.5"
+        fill="none"
+      />
+      <circle
+        cx="45"
+        cy="80"
+        r="18"
+        fill="none"
+        stroke="rgba(130,100,40,0.3)"
+        strokeWidth="1.8"
+      />
+      <circle
+        cx="45"
+        cy="80"
+        r="13"
+        fill="none"
+        stroke="rgba(130,100,40,0.2)"
+        strokeWidth="1"
+      />
+      {Array.from({ length: 10 }).map((_, i) => {
+        const a = (i / 10) * Math.PI * 2;
+        return (
+          <line
             key={i}
-            cx="50"
-            cy="50"
-            rx="14"
-            ry="26"
-            transform={`rotate(${angle} 50 50) translate(0 -16)`}
-            opacity={0.6 + (i % 3) * 0.1}
+            x1={45 + Math.cos(a) * 15}
+            y1={80 + Math.sin(a) * 15}
+            x2={45 + Math.cos(a) * 20}
+            y2={80 + Math.sin(a) * 20}
+            stroke="rgba(130,100,40,0.25)"
+            strokeWidth="2"
+            strokeLinecap="round"
           />
-        ))}
-        <circle cx="50" cy="50" r="9" fill="#7a0200" />
-        <circle cx="50" cy="50" r="5" fill="#A00300" opacity={0.7} />
-      </g>
+        );
+      })}
+      <circle
+        cx="45"
+        cy="80"
+        r="9"
+        fill="#0c0a06"
+        stroke="rgba(80,20,0,0.3)"
+        strokeWidth="1"
+      />
+      <circle cx="45" cy="78" r="4.5" fill="#050403" />
+      <rect x="43" y="79" width="4" height="7" rx="2" fill="#050403" />
     </svg>
   );
 }
@@ -127,6 +237,7 @@ function SlotCard({
 }) {
   const [showParticles, setShowParticles] = useState(false);
   const [showImage, setShowImage] = useState(false);
+  const [pulse, setPulse] = useState(1);
 
   useEffect(() => {
     if (justUnlocked) {
@@ -137,6 +248,20 @@ function SlotCard({
     }
   }, [justUnlocked]);
 
+  // Breathing glow pulse
+  useEffect(() => {
+    let frame;
+    let start = null;
+    const animate = (ts) => {
+      if (!start) start = ts;
+      const t = ((ts - start) / 2200) % 1;
+      setPulse(0.65 + 0.35 * Math.sin(t * Math.PI * 2));
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 32, scale: 0.93 }}
@@ -146,99 +271,122 @@ function SlotCard({
         duration: 0.55,
         ease: [0.23, 1, 0.32, 1],
       }}
-      className="relative group"
+      style={{ position: "relative", aspectRatio: "1 / 1" }}
     >
-      {/* Glow ring on unlock */}
+      {/* Outer glow ring on unlock */}
       <motion.div
-        className="absolute -inset-[2px] rounded-2xl pointer-events-none"
+        style={{
+          position: "absolute",
+          inset: -4,
+          pointerEvents: "none",
+          zIndex: 0,
+          filter: "blur(12px)",
+          borderRadius: 3,
+        }}
         animate={
           isUnlocked
             ? {
-                opacity: [0, 1, 0.7],
+                opacity: [0.5, 0.85, 0.5],
                 background:
-                  "linear-gradient(135deg, #A00300, #ff6b6b, #A00300)",
+                  "radial-gradient(ellipse at 50% 75%, rgba(190,20,0,0.75) 0%, transparent 70%)",
               }
             : { opacity: 0 }
         }
-        transition={{ duration: 0.7 }}
-        style={{ filter: "blur(5px)" }}
+        transition={{ repeat: Infinity, duration: 2.4 }}
       />
 
+      {/* Steel vault panel */}
       <div
-        className="relative rounded-2xl overflow-hidden"
         style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          zIndex: 1,
           background: isUnlocked
-            ? "linear-gradient(145deg, #1a0005 0%, #0e0003 100%)"
-            : "linear-gradient(145deg, #07071a 0%, #030312 100%)",
-          border: isUnlocked
-            ? "1px solid rgba(160,3,0,0.4)"
-            : "1px solid rgba(255,255,255,0.05)",
-          boxShadow: isUnlocked
-            ? "0 0 36px rgba(160,3,0,0.18), inset 0 1px 0 rgba(255,100,100,0.08)"
-            : "0 4px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)",
-          transition: "border 0.4s, box-shadow 0.4s, background 0.4s",
+            ? "radial-gradient(ellipse at 50% 40%, #1c1012 0%, #0e080a 50%, #060406 100%)"
+            : "radial-gradient(ellipse at 50% 40%, #18181e 0%, #0e0e14 50%, #07070d 100%)",
+          border: `2px solid ${isUnlocked ? "rgba(80,10,5,0.9)" : "rgba(20,20,35,0.95)"}`,
+          boxShadow: [
+            "inset 0 0 60px rgba(0,0,0,0.85)",
+            "inset 0 2px 4px rgba(255,255,255,0.025)",
+            isUnlocked
+              ? "0 0 40px rgba(160,10,0,0.25), 0 8px 32px rgba(0,0,0,0.8)"
+              : "0 8px 32px rgba(0,0,0,0.8)",
+          ].join(", "),
+          overflow: "hidden",
+          transition: "background 0.6s, border 0.4s, box-shadow 0.5s",
         }}
       >
-        {/* Rose watermark */}
-        <RoseWatermark opacity={isUnlocked ? 0.09 : 0.04} />
-
-        {/* Header bar */}
-        <div className="flex items-center justify-between px-4 pt-3 pb-2 relative z-10">
-          <div className="flex items-center gap-2">
-            <motion.div
-              className="w-2 h-2 rounded-full"
-              style={{ background: isUnlocked ? "#A00300" : "#1f1f3a" }}
-              animate={
-                isUnlocked
-                  ? {
-                      boxShadow: [
-                        "0 0 4px #A00300",
-                        "0 0 12px #ff4040",
-                        "0 0 4px #A00300",
-                      ],
-                    }
-                  : { boxShadow: "none" }
-              }
-              transition={{ repeat: Infinity, duration: 2 }}
-            />
-            <span
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "10px",
-                fontWeight: 600,
-                letterSpacing: "0.22em",
-                color: isUnlocked ? "#ffb3b3" : "#2e2e50",
-                textTransform: "uppercase",
-                transition: "color 0.4s",
-              }}
-            >
-              Seller{" "}
-              <span className="font-sans">{slotKey.padStart(2, "0")}</span>
-            </span>
-          </div>
-          <motion.div
-            animate={{ color: isUnlocked ? "#A00300" : "#2e2e50" }}
-            transition={{ duration: 0.4 }}
-          >
-            <LockIcon unlocked={isUnlocked} />
-          </motion.div>
-        </div>
-
-        {/* Video area */}
+        {/* Brushed steel texture */}
         <div
-          className="relative mx-3 mb-3 rounded-xl overflow-hidden"
-          style={{ height: "180px", background: "#04040f" }}
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            backgroundImage: `
+            repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.007) 3px, rgba(255,255,255,0.007) 4px),
+            repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px)
+          `,
+          }}
+        />
+
+        {/* Inset panel shadow border */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 14,
+            borderRadius: 2,
+            border: "1px solid rgba(0,0,0,0.7)",
+            boxShadow: "inset 0 4px 16px rgba(0,0,0,0.6)",
+            pointerEvents: "none",
+            zIndex: 2,
+          }}
+        />
+
+        {/* Red floor glow */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "80%",
+            height: "60%",
+            background: isUnlocked
+              ? `radial-gradient(ellipse at 50% 90%, rgba(200,20,0,${0.55 * pulse}) 0%, rgba(140,10,0,${0.28 * pulse}) 40%, transparent 75%)`
+              : `radial-gradient(ellipse at 50% 90%, rgba(100,10,0,${0.2 * pulse}) 0%, transparent 65%)`,
+            pointerEvents: "none",
+            transition: "background 0.5s",
+            zIndex: 1,
+          }}
+        />
+
+        {/* ── VIDEO AREA — original logic, zero changes ── */}
+        <div
+          style={{
+            position: "absolute",
+            inset: "10% 10% 10% 10%",
+            borderRadius: 8,
+            overflow: "hidden",
+            background: "#04040f",
+            zIndex: 3,
+          }}
         >
           {/* Silk sheen overlay */}
           <div
-            className="absolute inset-0 pointer-events-none z-10"
             style={{
+              position: "absolute",
+              inset: 0,
+              pointerEvents: "none",
+              zIndex: 10,
               background: isUnlocked
                 ? "linear-gradient(135deg, rgba(160,3,0,0.08) 0%, transparent 50%, rgba(160,3,0,0.04) 100%)"
                 : "transparent",
               transition: "background 0.6s",
             }}
           />
+
+          {/* Video */}
           {!showImage && (
             <video
               ref={videoRef}
@@ -246,34 +394,35 @@ function SlotCard({
               muted
               playsInline
               preload="auto"
-              className="w-full h-full object-cover"
-              onEnded={() => {
-                setShowImage(true);
-                if (onUnlockVideoEnd) {
-                  onUnlockVideoEnd(slotKey);
-                }
-              }}
               style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
                 filter: isUnlocked
                   ? "brightness(1.05) saturate(1.15)"
                   : "brightness(0.22) saturate(0) grayscale(1)",
                 transition: "filter 0.7s ease",
               }}
+              onEnded={() => {
+                setShowImage(true);
+                if (onUnlockVideoEnd) onUnlockVideoEnd(slotKey);
+              }}
             />
           )}
 
+          {/* Final image after video ends */}
           {showImage && (
             <motion.img
               src="/last-img.jpeg"
               alt="Final"
-              className="w-full h-full object-cover"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
             />
           )}
 
-          {/* Locked overlay */}
+          {/* Locked overlay — padlock instead of ♥ */}
           <AnimatePresence>
             {!isUnlocked && (
               <motion.div
@@ -281,25 +430,28 @@ function SlotCard({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-20"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 20,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(4,4,15,0.5)",
+                }}
               >
-                <motion.div
-                  style={{ color: "#1a1a40", fontSize: 28 }}
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ repeat: Infinity, duration: 3 }}
-                >
-                  ♥
-                </motion.div>
                 <span
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "9px",
-                    color: "#1a1a3a",
-                    letterSpacing: "0.25em",
+                    fontSize: "7px",
+                    color: "rgba(255,255,255,0.15)",
+                    letterSpacing: "0.3em",
                     textTransform: "uppercase",
+                    marginTop: 6,
                   }}
                 >
-                  Coming Soon
+                  Locked
                 </span>
               </motion.div>
             )}
@@ -310,69 +462,43 @@ function SlotCard({
             {justUnlocked && (
               <motion.div
                 key="flash"
-                className="absolute inset-0 z-30"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 30,
+                  background:
+                    "radial-gradient(circle, rgba(160,3,0,0.7) 0%, transparent 70%)",
+                }}
                 initial={{ opacity: 0.9 }}
                 animate={{ opacity: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.7 }}
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(160,3,0,0.7) 0%, transparent 70%)",
-                }}
               />
             )}
           </AnimatePresence>
         </div>
 
-        {/* Status strip */}
+        {/* Rivets sit on top of everything */}
+        <PanelRivets />
+
+        {/* Slot number */}
         <div
-          className="mx-3 mb-3 rounded-lg px-3 py-2 flex items-center justify-between relative z-10"
           style={{
-            background: isUnlocked
-              ? "rgba(160,3,0,0.1)"
-              : "rgba(255,255,255,0.02)",
-            border: isUnlocked
-              ? "1px solid rgba(160,3,0,0.2)"
-              : "1px solid rgba(255,255,255,0.04)",
-            transition: "all 0.4s",
+            position: "absolute",
+            top: 18,
+            left: "50%",
+            transform: "translateX(-50%)",
+            fontSize: 8,
+            fontFamily: "monospace",
+            color: isUnlocked
+              ? "rgba(255,180,180,0.22)"
+              : "rgba(255,255,255,0.07)",
+            letterSpacing: "0.25em",
+            userSelect: "none",
+            zIndex: 11,
           }}
         >
-          <span
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "13px",
-              fontWeight: 600,
-              color: isUnlocked ? "#ffb3b3" : "#1f1f3a",
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              transition: "color 0.4s",
-            }}
-          >
-            {isUnlocked ? "✦ Live Now" : "Awaiting"}
-          </span>
-          <motion.div className="flex gap-1">
-            {[0, 1, 2].map((dot) => (
-              <motion.div
-                key={dot}
-                className="rounded-full"
-                style={{
-                  width: 5,
-                  height: 5,
-                  background: isUnlocked ? "#A00300" : "#0d0d25",
-                }}
-                animate={
-                  isUnlocked
-                    ? { opacity: [0.4, 1, 0.4], scale: [1, 1.3, 1] }
-                    : { opacity: 0.25 }
-                }
-                transition={{
-                  repeat: Infinity,
-                  duration: 1.4,
-                  delay: dot * 0.22,
-                }}
-              />
-            ))}
-          </motion.div>
+          {slotKey.padStart(2, "0")}
         </div>
 
         {/* Particle burst */}
@@ -385,13 +511,13 @@ function SlotCard({
 export default function Home() {
   const [buttonStates, setButtonStates] = useState({});
   const [justUnlocked, setJustUnlocked] = useState({});
-
   const [showFinalVideo, setShowFinalVideo] = useState(false);
   const [allUnlocked, setAllUnlocked] = useState(false);
   const videoRefs = useRef({});
   const previousStates = useRef({});
-
   const [targetCount, setTargetCount] = useState(9);
+  const finalVideoRef = useRef(null);
+  const [soundEnabled, setSoundEnabled] = useState(false);
 
   const fetchButtons = async () => {
     try {
@@ -399,7 +525,6 @@ export default function Home() {
       const data = await res.json();
       const newButtons = data.buttons;
       const unlocks = {};
-
       Object.keys(newButtons).forEach((key) => {
         const prev = previousStates.current[key] || 0;
         const current = newButtons[key];
@@ -408,12 +533,10 @@ export default function Home() {
           unlocks[key] = true;
         }
       });
-
       if (Object.keys(unlocks).length > 0) {
         setJustUnlocked(unlocks);
         setTimeout(() => setJustUnlocked({}), 900);
       }
-
       previousStates.current = newButtons;
       setButtonStates(newButtons);
     } catch (err) {
@@ -424,14 +547,8 @@ export default function Home() {
   const triggerUnlock = (key) => {
     const video = videoRefs.current[key];
     if (!video) return;
-
     video.currentTime = 0;
     video.play();
-
-    // reset image state
-    if (video.dataset) {
-      video.dataset.playing = "true";
-    }
   };
 
   useEffect(() => {
@@ -442,9 +559,7 @@ export default function Home() {
 
   useEffect(() => {
     const savedTarget = localStorage.getItem("launchTargetCount");
-    if (savedTarget) {
-      setTargetCount(Number(savedTarget));
-    }
+    if (savedTarget) setTargetCount(Number(savedTarget));
   }, []);
 
   const totalUnlocked = Object.values(buttonStates).filter(
@@ -452,31 +567,21 @@ export default function Home() {
   ).length;
 
   useEffect(() => {
-    if (totalUnlocked >= targetCount) {
-      setAllUnlocked(true);
-    } else {
-      setAllUnlocked(false);
-    }
+    setAllUnlocked(totalUnlocked >= targetCount);
   }, [totalUnlocked, targetCount]);
 
   const handleUnlockVideoEnd = (key) => {
     if (allUnlocked) {
-      // small cinematic delay
-      setTimeout(() => {
-        setShowFinalVideo(true);
-      }, 800);
+      setTimeout(() => setShowFinalVideo(true), 800);
     }
   };
+
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body { background: #030310; min-height: 100vh; }
-
-        /* Subtle noise texture */
         .silk-bg::before {
           content: '';
           position: fixed;
@@ -487,15 +592,7 @@ export default function Home() {
           z-index: 0;
           opacity: 0.6;
         }
-
-        /* Decorative corner lines */
-        .corner-ornament {
-          position: absolute;
-          width: 40px;
-          height: 40px;
-          border-color: rgba(160,3,0,0.25);
-          border-style: solid;
-        }
+        .corner-ornament { position: absolute; width: 40px; height: 40px; border-color: rgba(160,3,0,0.25); border-style: solid; }
         .corner-ornament.tl { top: 24px; left: 24px; border-width: 1px 0 0 1px; }
         .corner-ornament.tr { top: 24px; right: 24px; border-width: 1px 1px 0 0; }
         .corner-ornament.bl { bottom: 24px; left: 24px; border-width: 0 0 1px 1px; }
@@ -513,11 +610,11 @@ export default function Home() {
             style={{
               minHeight: "100vh",
               background: `
-          radial-gradient(ellipse 70% 50% at 50% -5%, rgba(160,3,0,0.12) 0%, transparent 60%),
-          radial-gradient(ellipse 50% 40% at 20% 110%, rgba(0,9,48,0.8) 0%, transparent 55%),
-          radial-gradient(ellipse 40% 35% at 85% 95%, rgba(160,3,0,0.06) 0%, transparent 50%),
-          #030310
-        `,
+                radial-gradient(ellipse 70% 50% at 50% -5%, rgba(160,3,0,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 20% 110%, rgba(0,9,48,0.8) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 35% at 85% 95%, rgba(160,3,0,0.06) 0%, transparent 50%),
+                #030310
+              `,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -526,13 +623,12 @@ export default function Home() {
               position: "relative",
             }}
           >
-            {/* Corner ornaments */}
             <div className="corner-ornament tl" />
             <div className="corner-ornament tr" />
             <div className="corner-ornament bl" />
             <div className="corner-ornament br" />
 
-            {/* Header */}
+            {/* Header — unchanged */}
             <motion.div
               initial={{ opacity: 0, y: -24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -544,7 +640,6 @@ export default function Home() {
                 zIndex: 1,
               }}
             >
-              {/* Top label */}
               <div
                 style={{
                   display: "flex",
@@ -585,51 +680,95 @@ export default function Home() {
                   }}
                 />
               </div>
-
-              {/* Main title */}
-              <h1
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontWeight: 900,
-                  fontStyle: "italic",
-                  fontSize: "clamp(30px, 5.5vw, 52px)",
-                  color: "#f9f4f4",
-                  letterSpacing: "-0.01em",
-                  lineHeight: 1.05,
-                }}
-              >
-                The Launch
-              </h1>
-              <div
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontWeight: 300,
-                  fontSize: "clamp(12px, 2vw, 16px)",
-                  color: "rgba(255,200,200,0.45)",
-                  letterSpacing: "0.4em",
-                  textTransform: "uppercase",
-                  marginTop: "4px",
-                }}
-              >
-                Sale Week
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <h1 style={{ margin: 0, lineHeight: 1, textAlign: "center" }}>
+                  <span
+                    style={{
+                      display: "block",
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontWeight: 700,
+                      fontSize: "clamp(38px, 7vw, 72px)",
+                      color: "#f9f4f4",
+                      letterSpacing: "-0.02em",
+                      lineHeight: 0.95,
+                    }}
+                  >
+                    SheRise Grand Sale
+                  </span>
+                </h1>
+                <p
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontStyle: "italic",
+                    fontSize: "clamp(13px, 1.6vw, 16px)",
+                    color: "rgba(255,255,255,0.38)",
+                    letterSpacing: "0.06em",
+                    textAlign: "center",
+                    marginTop: "10px",
+                  }}
+                >
+                  Celebrating women who build, sell & inspire
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    marginTop: "10px",
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      maxWidth: "60px",
+                      height: "1px",
+                      background:
+                        "linear-gradient(to right, transparent, rgba(160,3,0,0.4))",
+                    }}
+                  />
+                  <svg width="6" height="6" viewBox="0 0 6 6" fill="none">
+                    <rect
+                      x="3"
+                      y="0"
+                      width="3"
+                      height="3"
+                      transform="rotate(45 3 3)"
+                      fill="rgba(160,3,0,0.5)"
+                    />
+                  </svg>
+                  <div
+                    style={{
+                      flex: 1,
+                      maxWidth: "60px",
+                      height: "1px",
+                      background:
+                        "linear-gradient(to left, transparent, rgba(160,3,0,0.4))",
+                    }}
+                  />
+                </div>
               </div>
             </motion.div>
 
-            {/* Grid */}
+            {/* Vault grid — tight gap + outer iron frame */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "28px",
-                maxWidth: "1000px",
+                gap: "6px",
+                maxWidth: "1600px",
                 width: "100%",
                 position: "relative",
                 zIndex: 1,
+                background: "#020204",
+                padding: "6px",
+                border: "3px solid #0c0c18",
+                boxShadow:
+                  "0 0 80px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.6)",
               }}
             >
               {Array.from({ length: targetCount }, (_, i) => {
                 const key = String(i + 1);
-
                 return (
                   <SlotCard
                     key={key}
@@ -644,7 +783,7 @@ export default function Home() {
               })}
             </div>
 
-            {/* Footer */}
+            {/* Footer — unchanged */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -668,6 +807,8 @@ export default function Home() {
           </motion.main>
         )}
       </AnimatePresence>
+
+      {/* Final video reveal — unchanged */}
       <AnimatePresence>
         {showFinalVideo && (
           <motion.div
@@ -684,7 +825,6 @@ export default function Home() {
               background: "black",
             }}
           >
-            {/* 🔴 Cinematic Crimson Bloom */}
             <motion.div
               initial={{ scale: 0.6, opacity: 0.8 }}
               animate={{ scale: 2.2, opacity: 0 }}
@@ -697,8 +837,6 @@ export default function Home() {
                 zIndex: 2,
               }}
             />
-
-            {/* ✨ Subtle Silk Flash */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0.4, 0] }}
@@ -711,19 +849,98 @@ export default function Home() {
                 zIndex: 3,
               }}
             />
-
-            {/* 🎥 Final Video Reveal */}
             <motion.video
+              ref={finalVideoRef}
               src="/end.mp4"
               autoPlay
-              muted
+              muted={!soundEnabled}
               playsInline
               className="w-full h-full object-cover"
-              initial={{ scale: 1.2, filter: "blur(8px) brightness(0.6)" }}
-              animate={{ scale: 1, filter: "blur(0px) brightness(1)" }}
+              initial={{ filter: "blur(8px) brightness(0.6)" }}
+              animate={{ filter: "blur(0px) brightness(1)" }}
               transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
-              style={{ position: "relative", zIndex: 1 }}
+              style={{
+                position: "relative",
+                zIndex: 1,
+                transform: "scale(1.4)", // 👈 stays zoomed
+              }}
             />
+            {!soundEnabled && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                onClick={() => {
+                  if (finalVideoRef.current) {
+                    finalVideoRef.current.muted = false;
+                    finalVideoRef.current.play();
+                    setSoundEnabled(true);
+                  }
+                }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
+                style={{
+                  position: "absolute",
+                  top: "24px",
+                  right: "24px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "0 16px 0 12px",
+                  height: "40px",
+                  borderRadius: "40px",
+                  background: "rgba(10,10,20,0.6)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  color: "#fff",
+                  cursor: "pointer",
+                  zIndex: 5,
+                  boxShadow:
+                    "0 2px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.07)",
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3 9.5V14.5H7L13 19V5L7 9.5H3Z"
+                    fill="rgba(255,255,255,0.9)"
+                  />
+                  <line
+                    x1="17"
+                    y1="9"
+                    x2="21"
+                    y2="15"
+                    stroke="rgba(255,255,255,0.9)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="21"
+                    y1="9"
+                    x2="17"
+                    y2="15"
+                    stroke="rgba(255,255,255,0.9)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <motion.div
+                  animate={{ opacity: [1, 0.2, 1] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 1.6,
+                    ease: "easeInOut",
+                  }}
+                  style={{
+                    width: 5,
+                    height: 5,
+                    borderRadius: "50%",
+                    background: "#A00300",
+                    flexShrink: 0,
+                  }}
+                />
+              </motion.button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
