@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import LaunchScreen from "./Launchscreen";
+import SmokeOverlay from "./Smokeoverlay";
 
 const API_URL = "https://launch.betalearnings.com/api/buttons";
 
-// Petal / sparkle burst on unlock
 function Particles({ active }) {
   if (!active) return null;
   const colors = ["#A00300", "#ff6b6b", "#ffd6d6", "#fff0f0", "#ffb3b3"];
@@ -43,7 +44,6 @@ function Particles({ active }) {
   );
 }
 
-// Rivet bolt
 function Rivet({ style }) {
   return (
     <div
@@ -62,7 +62,6 @@ function Rivet({ style }) {
   );
 }
 
-// Panel edge rivets matching the reference image
 function PanelRivets() {
   return (
     <>
@@ -88,7 +87,6 @@ function PanelRivets() {
   );
 }
 
-// Padlock SVG shown over locked video area
 function PadlockSVG({ pulse }) {
   return (
     <svg
@@ -248,7 +246,6 @@ function SlotCard({
     }
   }, [justUnlocked]);
 
-  // Breathing glow pulse
   useEffect(() => {
     let frame;
     let start = null;
@@ -271,9 +268,8 @@ function SlotCard({
         duration: 0.55,
         ease: [0.23, 1, 0.32, 1],
       }}
-      style={{ position: "relative", aspectRatio: "1 / 1" }}
+      style={{ position: "relative", width: "100%", height: "100%" }}
     >
-      {/* Outer glow ring on unlock */}
       <motion.div
         style={{
           position: "absolute",
@@ -295,7 +291,6 @@ function SlotCard({
         transition={{ repeat: Infinity, duration: 2.4 }}
       />
 
-      {/* Steel vault panel */}
       <div
         style={{
           position: "relative",
@@ -317,20 +312,17 @@ function SlotCard({
           transition: "background 0.6s, border 0.4s, box-shadow 0.5s",
         }}
       >
-        {/* Brushed steel texture */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             pointerEvents: "none",
             backgroundImage: `
-            repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.007) 3px, rgba(255,255,255,0.007) 4px),
-            repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px)
-          `,
+              repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.007) 3px, rgba(255,255,255,0.007) 4px),
+              repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px)
+            `,
           }}
         />
-
-        {/* Inset panel shadow border */}
         <div
           style={{
             position: "absolute",
@@ -342,8 +334,6 @@ function SlotCard({
             zIndex: 2,
           }}
         />
-
-        {/* Red floor glow */}
         <div
           style={{
             position: "absolute",
@@ -361,7 +351,6 @@ function SlotCard({
           }}
         />
 
-        {/* ── VIDEO AREA — original logic, zero changes ── */}
         <div
           style={{
             position: "absolute",
@@ -372,7 +361,6 @@ function SlotCard({
             zIndex: 3,
           }}
         >
-          {/* Silk sheen overlay */}
           <div
             style={{
               position: "absolute",
@@ -386,7 +374,6 @@ function SlotCard({
             }}
           />
 
-          {/* Video */}
           {!showImage && (
             <video
               ref={videoRef}
@@ -410,7 +397,6 @@ function SlotCard({
             />
           )}
 
-          {/* Final image after video ends */}
           {showImage && (
             <motion.img
               src="/last-img.jpeg"
@@ -422,7 +408,6 @@ function SlotCard({
             />
           )}
 
-          {/* Locked overlay — padlock instead of ♥ */}
           <AnimatePresence>
             {!isUnlocked && (
               <motion.div
@@ -457,7 +442,6 @@ function SlotCard({
             )}
           </AnimatePresence>
 
-          {/* Unlock flash */}
           <AnimatePresence>
             {justUnlocked && (
               <motion.div
@@ -478,10 +462,8 @@ function SlotCard({
           </AnimatePresence>
         </div>
 
-        {/* Rivets sit on top of everything */}
         <PanelRivets />
 
-        {/* Slot number */}
         <div
           style={{
             position: "absolute",
@@ -501,7 +483,6 @@ function SlotCard({
           {slotKey.padStart(2, "0")}
         </div>
 
-        {/* Particle burst */}
         <Particles active={showParticles} />
       </div>
     </motion.div>
@@ -518,6 +499,7 @@ export default function Home() {
   const [targetCount, setTargetCount] = useState(9);
   const finalVideoRef = useRef(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const [showLaunchScreen, setShowLaunchScreen] = useState(false);
 
   const fetchButtons = async () => {
     try {
@@ -581,7 +563,7 @@ export default function Home() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #030310; min-height: 100vh; }
+        html, body { height: 100%; overflow: hidden; background: #030310; }
         .silk-bg::before {
           content: '';
           position: fixed;
@@ -592,11 +574,11 @@ export default function Home() {
           z-index: 0;
           opacity: 0.6;
         }
-        .corner-ornament { position: absolute; width: 40px; height: 40px; border-color: rgba(160,3,0,0.25); border-style: solid; }
-        .corner-ornament.tl { top: 24px; left: 24px; border-width: 1px 0 0 1px; }
-        .corner-ornament.tr { top: 24px; right: 24px; border-width: 1px 1px 0 0; }
-        .corner-ornament.bl { bottom: 24px; left: 24px; border-width: 0 0 1px 1px; }
-        .corner-ornament.br { bottom: 24px; right: 24px; border-width: 0 1px 1px 0; }
+        .corner-ornament { position: absolute; width: 32px; height: 32px; border-color: rgba(160,3,0,0.25); border-style: solid; }
+        .corner-ornament.tl { top: 16px; left: 16px; border-width: 1px 0 0 1px; }
+        .corner-ornament.tr { top: 16px; right: 16px; border-width: 1px 1px 0 0; }
+        .corner-ornament.bl { bottom: 16px; left: 16px; border-width: 0 0 1px 1px; }
+        .corner-ornament.br { bottom: 16px; right: 16px; border-width: 0 1px 1px 0; }
       `}</style>
 
       <AnimatePresence>
@@ -608,7 +590,8 @@ export default function Home() {
             transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
             className="silk-bg"
             style={{
-              minHeight: "100vh",
+              height: "100vh",
+              overflow: "hidden",
               background: `
                 radial-gradient(ellipse 70% 50% at 50% -5%, rgba(160,3,0,0.12) 0%, transparent 60%),
                 radial-gradient(ellipse 50% 40% at 20% 110%, rgba(0,9,48,0.8) 0%, transparent 55%),
@@ -619,7 +602,7 @@ export default function Home() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              padding: "48px 24px",
+              padding: "12px 16px",
               position: "relative",
             }}
           >
@@ -628,16 +611,17 @@ export default function Home() {
             <div className="corner-ornament bl" />
             <div className="corner-ornament br" />
 
-            {/* Header — unchanged */}
+            {/* Header — compact */}
             <motion.div
               initial={{ opacity: 0, y: -24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
               style={{
                 textAlign: "center",
-                marginBottom: "44px",
+                marginBottom: "10px",
                 position: "relative",
                 zIndex: 1,
+                flexShrink: 0,
               }}
             >
               <div
@@ -646,7 +630,7 @@ export default function Home() {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: "12px",
-                  marginBottom: "10px",
+                  marginBottom: "6px",
                 }}
               >
                 <div
@@ -660,7 +644,7 @@ export default function Home() {
                 <motion.span
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "10px",
+                    fontSize: "9px",
                     fontWeight: 600,
                     color: "#A00300",
                     letterSpacing: "0.35em",
@@ -687,24 +671,24 @@ export default function Home() {
                       display: "block",
                       fontFamily: "'Cormorant Garamond', serif",
                       fontWeight: 700,
-                      fontSize: "clamp(38px, 7vw, 72px)",
+                      fontSize: "clamp(28px, 4vw, 52px)",
                       color: "#f9f4f4",
                       letterSpacing: "-0.02em",
                       lineHeight: 0.95,
                     }}
                   >
-                    SheRise Grand Sale
+                    <span className="text-[#A00300]"> SheRise </span>Grand Sale
                   </span>
                 </h1>
                 <p
                   style={{
                     fontFamily: "'Cormorant Garamond', serif",
                     fontStyle: "italic",
-                    fontSize: "clamp(13px, 1.6vw, 16px)",
+                    fontSize: "clamp(11px, 1.2vw, 13px)",
                     color: "rgba(255,255,255,0.38)",
                     letterSpacing: "0.06em",
                     textAlign: "center",
-                    marginTop: "10px",
+                    marginTop: "6px",
                   }}
                 >
                   Celebrating women who build, sell & inspire
@@ -715,7 +699,7 @@ export default function Home() {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "8px",
-                    marginTop: "10px",
+                    marginTop: "6px",
                   }}
                 >
                   <div
@@ -750,18 +734,22 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Vault grid — tight gap + outer iron frame */}
+            <SmokeOverlay />
+
+            {/* Grid — fills remaining height, stays square via min() */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "6px",
-                maxWidth: "1600px",
-                width: "100%",
+                gridTemplateRows: "repeat(3, 1fr)",
+                gap: "8px",
+                width: "min(calc(100vh - 160px), calc(100vw - 32px))",
+                height: "min(calc(100vh - 160px), calc(100vw - 32px))",
+                flexShrink: 0,
                 position: "relative",
                 zIndex: 1,
                 background: "#020204",
-                padding: "6px",
+                padding: "8px",
                 border: "3px solid #0c0c18",
                 boxShadow:
                   "0 0 80px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.6)",
@@ -783,19 +771,20 @@ export default function Home() {
               })}
             </div>
 
-            {/* Footer — unchanged */}
+            {/* Footer — compact */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
               style={{
-                marginTop: "36px",
+                marginTop: "8px",
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "10px",
+                fontSize: "9px",
                 fontStyle: "italic",
                 color: "rgba(160,3,0,0.3)",
                 letterSpacing: "0.2em",
                 zIndex: 1,
+                flexShrink: 0,
                 display: "flex",
                 alignItems: "center",
                 gap: "10px",
@@ -808,7 +797,6 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Final video reveal — unchanged */}
       <AnimatePresence>
         {showFinalVideo && (
           <motion.div
@@ -825,122 +813,180 @@ export default function Home() {
               background: "black",
             }}
           >
-            <motion.div
-              initial={{ scale: 0.6, opacity: 0.8 }}
-              animate={{ scale: 2.2, opacity: 0 }}
-              transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "radial-gradient(circle at center, rgba(160,3,0,0.8) 0%, rgba(160,3,0,0.5) 25%, rgba(0,0,0,1) 70%)",
-                zIndex: 2,
-              }}
-            />
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.4, 0] }}
-              transition={{ duration: 1.2 }}
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)",
-                zIndex: 3,
-              }}
-            />
-            <motion.video
-              ref={finalVideoRef}
-              src="/end.mp4"
-              autoPlay
-              muted={!soundEnabled}
-              playsInline
-              className="w-full h-full object-cover"
-              initial={{ filter: "blur(8px) brightness(0.6)" }}
-              animate={{ filter: "blur(0px) brightness(1)" }}
-              transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
-              style={{
-                position: "relative",
-                zIndex: 1,
-                transform: "scale(1.4)", // 👈 stays zoomed
-              }}
-            />
-            {!soundEnabled && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                onClick={() => {
-                  if (finalVideoRef.current) {
-                    finalVideoRef.current.muted = false;
-                    finalVideoRef.current.play();
-                    setSoundEnabled(true);
-                  }
-                }}
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
-                style={{
-                  position: "absolute",
-                  top: "24px",
-                  right: "24px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "0 16px 0 12px",
-                  height: "40px",
-                  borderRadius: "40px",
-                  background: "rgba(10,10,20,0.6)",
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  color: "#fff",
-                  cursor: "pointer",
-                  zIndex: 5,
-                  boxShadow:
-                    "0 2px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.07)",
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M3 9.5V14.5H7L13 19V5L7 9.5H3Z"
-                    fill="rgba(255,255,255,0.9)"
-                  />
-                  <line
-                    x1="17"
-                    y1="9"
-                    x2="21"
-                    y2="15"
-                    stroke="rgba(255,255,255,0.9)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="21"
-                    y1="9"
-                    x2="17"
-                    y2="15"
-                    stroke="rgba(255,255,255,0.9)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
+            <AnimatePresence>
+              {!showLaunchScreen && (
                 <motion.div
-                  animate={{ opacity: [1, 0.2, 1] }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 1.6,
-                    ease: "easeInOut",
+                  key="video-layer"
+                  initial={{ opacity: 1 }}
+                  exit={{
+                    opacity: 0,
+                    scale: 1.06,
+                    filter: "blur(12px) brightness(2)",
                   }}
-                  style={{
-                    width: 5,
-                    height: 5,
-                    borderRadius: "50%",
-                    background: "#A00300",
-                    flexShrink: 0,
-                  }}
-                />
-              </motion.button>
-            )}
+                  transition={{ duration: 1.4, ease: [0.4, 0, 0.2, 1] }}
+                  style={{ position: "absolute", inset: 0, zIndex: 1 }}
+                >
+                  <motion.div
+                    initial={{ scale: 0.6, opacity: 0.8 }}
+                    animate={{ scale: 2.2, opacity: 0 }}
+                    transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "radial-gradient(circle at center, rgba(160,3,0,0.8) 0%, rgba(160,3,0,0.5) 25%, rgba(0,0,0,1) 70%)",
+                      zIndex: 2,
+                    }}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 0.4, 0] }}
+                    transition={{ duration: 1.2 }}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)",
+                      zIndex: 3,
+                    }}
+                  />
+                  <motion.video
+                    ref={finalVideoRef}
+                    src="/end.mp4"
+                    autoPlay
+                    muted={!soundEnabled}
+                    playsInline
+                    onLoadedMetadata={(e) => {
+                      e.currentTarget.playbackRate = 0.75;
+                    }}
+                    className="w-full h-full object-cover"
+                    initial={{ filter: "blur(8px) brightness(0.6)" }}
+                    animate={{ filter: "blur(0px) brightness(1)" }}
+                    transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: "relative",
+                      zIndex: 1,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      transform: "scale(1.3)",
+                    }}
+                    onEnded={() => {
+                      setTimeout(() => setShowLaunchScreen(true), 320);
+                    }}
+                  />
+
+                  {!soundEnabled && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                      onClick={() => {
+                        if (finalVideoRef.current) {
+                          finalVideoRef.current.muted = false;
+                          finalVideoRef.current.play();
+                          setSoundEnabled(true);
+                        }
+                      }}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
+                      style={{
+                        position: "absolute",
+                        top: "24px",
+                        right: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        padding: "0 16px 0 12px",
+                        height: "40px",
+                        borderRadius: "40px",
+                        background: "rgba(10,10,20,0.6)",
+                        backdropFilter: "blur(12px)",
+                        WebkitBackdropFilter: "blur(12px)",
+                        border: "1px solid rgba(255,255,255,0.12)",
+                        color: "#fff",
+                        cursor: "pointer",
+                        zIndex: 5,
+                        boxShadow:
+                          "0 2px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.07)",
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M3 9.5V14.5H7L13 19V5L7 9.5H3Z"
+                          fill="rgba(255,255,255,0.9)"
+                        />
+                        <line
+                          x1="17"
+                          y1="9"
+                          x2="21"
+                          y2="15"
+                          stroke="rgba(255,255,255,0.9)"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <line
+                          x1="21"
+                          y1="9"
+                          x2="17"
+                          y2="15"
+                          stroke="rgba(255,255,255,0.9)"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <motion.div
+                        animate={{ opacity: [1, 0.2, 1] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1.6,
+                          ease: "easeInOut",
+                        }}
+                        style={{
+                          width: 5,
+                          height: 5,
+                          borderRadius: "50%",
+                          background: "#A00300",
+                          flexShrink: 0,
+                        }}
+                      />
+                    </motion.button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {showLaunchScreen && (
+                <motion.div
+                  key="launch-screen-layer"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+                  style={{ position: "absolute", inset: 0, zIndex: 10 }}
+                >
+                  <motion.div
+                    initial={{ opacity: 0.7, scale: 0.8 }}
+                    animate={{ opacity: 0, scale: 2.5 }}
+                    transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      zIndex: 20,
+                      pointerEvents: "none",
+                      background:
+                        "radial-gradient(circle at center, rgba(160,3,0,0.65) 0%, rgba(30,1,0,0.4) 40%, transparent 70%)",
+                    }}
+                  />
+                  <LaunchScreen />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
